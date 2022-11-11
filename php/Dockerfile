@@ -36,12 +36,12 @@ RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 ## get dependency files
-COPY ./appc/omposer.json ./app/composer.lock ./
+COPY ./app/composer.json ./app/composer.lock ./
 COPY ./app/package.json ./app/package.lock ./
 ## run dependency managers
 RUN composer install --no-interaction --no-scripts
 RUN npm install
-COPY webpack.config.js ./
+COPY ./app/webpack.config.js ./
 COPY ./app/assets/ assets/
 COPY ./app/public/ public/
 RUN encore
@@ -50,7 +50,7 @@ RUN encore
 FROM main as prod
 RUN apt-get update && apt-get install -y supervisor git
 RUN mkdir -p /var/log/supervisor
-COPY messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
+COPY ./messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
 COPY --from=scc ./scc /usr/local/bin/scc
 COPY --from=build-stage /var/www/project/ /var/www/project/
 COPY ./app/ /var/www/project/
