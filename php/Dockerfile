@@ -1,12 +1,6 @@
-## DOCS
-## https://hub.docker.com/_/php
-FROM php:8.1-fpm-alpine
-
+FROM php:8.1-fpm-alpine as main
 VOLUME /var/www/project/
 WORKDIR /var/www/project/
-
-### --- Install: PHP-Extensions --- ###
-## docs: https://github.com/mlocati/docker-php-extension-installer
 RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
@@ -20,11 +14,47 @@ RUN curl -sSLf \
         xsl \
         intl
 
-## For furhter configuration see example here: 
-##   https://github.com/ventureleap/fckcrn-cockpit/blob/main/docker/Dockerfile.php
+FROM composer:2.4.1 as composer
 
+FROM golang:1.18 as scc
+WORKDIR /scc
+RUN apt-get update && apt-get install -y golang
+COPY ./scc/ ./
+RUN go mod download
+RUN go build
 
+###### BUILDING SECTION ######
+FROM main as build-stage
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+## get node and npm
+ENV NODE_VERSION=16.13.0
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+## get dependency files
+COPY composer.json composer.lock ./
+COPY package.json package.lock ./
+## run dependency managers
+RUN composer install --no-interaction --no-scripts
+RUN npm install
+COPY webpack.config.js ./
+COPY assets/ assets/
+COPY public/ public/
+RUN encore
 
-## Last step to copy the source code into Docker image
-
-COPY ./app/ /var/www/project
+###### PROD SECTION
+FROM main as prod
+RUN apt-get update && apt-get install -y supervisor git
+RUN mkdir -p /var/log/supervisor
+COPY messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
+COPY --from=scc ./scc /usr/local/bin/scc
+COPY --from=build-stage /var/www/project/ /var/www/project/
+COPY ./app/ /var/www/project/
+COPY .env .env.local
+RUN bin/console assets:install
+RUN bin/console cache:clear -e prod
+CMD ["/usr/bin/supervisord"]
