@@ -1,6 +1,8 @@
 FROM php:8.1-fpm-alpine as main
 VOLUME /var/www/project/
 WORKDIR /var/www/project/
+RUN apt-get update
+RUN apt-get install -y curl
 RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
@@ -27,7 +29,7 @@ FROM main as build-stage
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 ## get node and npm
 ENV NODE_VERSION=16.13.0
-RUN apt install -y curl
+
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ENV NVM_DIR=/root/.nvm
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
@@ -47,7 +49,7 @@ RUN encore
 
 ###### PROD SECTION
 FROM main as prod
-RUN apt update && apt install -y supervisor git
+RUN apt-get install -y supervisor git
 RUN mkdir -p /var/log/supervisor
 COPY ./messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
 COPY --from=scc ./scc /usr/local/bin/scc
