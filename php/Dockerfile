@@ -47,7 +47,7 @@ RUN encore
 
 ###### PROD SECTION
 FROM main as prod
-RUN apt-get update && apt-get install -y supervisor git
+RUN apt update && apt install -y supervisor git
 RUN mkdir -p /var/log/supervisor
 COPY ./messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
 COPY --from=scc ./scc /usr/local/bin/scc
