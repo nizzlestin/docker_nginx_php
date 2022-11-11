@@ -36,14 +36,14 @@ RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 ## get dependency files
-COPY composer.json composer.lock ./
-COPY package.json package.lock ./
+COPY ./appc/omposer.json ./app/composer.lock ./
+COPY ./app/package.json ./app/package.lock ./
 ## run dependency managers
 RUN composer install --no-interaction --no-scripts
 RUN npm install
 COPY webpack.config.js ./
-COPY assets/ assets/
-COPY public/ public/
+COPY ./app/assets/ assets/
+COPY ./app/public/ public/
 RUN encore
 
 ###### PROD SECTION
