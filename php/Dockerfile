@@ -18,7 +18,6 @@ FROM composer:2.4.1 as composer
 
 FROM golang:1.18 as scc
 WORKDIR /scc
-RUN apt-get update && apt-get install -y golang
 COPY ./scc/ ./
 RUN go mod download
 RUN go build
