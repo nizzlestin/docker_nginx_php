@@ -37,7 +37,7 @@ RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 ## get dependency files
 COPY ./app/composer.json ./app/composer.lock ./
-COPY ./app/package.json ./app/package.lock ./
+COPY ./app/package.json ./app/package-lock.json ./
 ## run dependency managers
 RUN composer install --no-interaction --no-scripts
 RUN npm install
