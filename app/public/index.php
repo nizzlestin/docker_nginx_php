@@ -1,10 +1,9 @@
 <?php
 
-// Show all information, defaults to INFO_ALL
-phpinfo();
+use App\Kernel;
 
-// Show just the module information.
-// phpinfo(8) yields identical results.
-phpinfo(INFO_MODULES);
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-?>
+return function (array $context) {
+    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+};

@@ -6,7 +6,7 @@ COPY ./scc/ ./
 RUN go mod download
 RUN go build
 
-FROM php:8.1-fpm-buster as main
+FROM php:8.1-fpm-alpine as main
 VOLUME /var/www/project/
 WORKDIR /var/www/project/
 RUN apt-get update
@@ -54,4 +54,5 @@ COPY --from=scc ./scc/scc /usr/local/bin/scc
 COPY ./app/.env /var/www/project/.env.local
 RUN bin/console assets:install
 RUN bin/console cache:clear -e prod
+ENTRYPOINT ["bin/console", "do:mi:m", "--no-interaction"]
 CMD ["/usr/bin/supervisord"]
