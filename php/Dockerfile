@@ -1,3 +1,11 @@
+FROM composer:2.4.4 as composer
+
+FROM golang:1.18 as scc
+WORKDIR /scc
+COPY ./scc/ ./
+RUN go mod download
+RUN go build
+
 FROM php:8.1-fpm-buster as main
 VOLUME /var/www/project/
 WORKDIR /var/www/project/
@@ -10,22 +18,16 @@ RUN curl -sSLf \
     IPE_LZF_BETTERCOMPRESSION=1 install-php-extensions \
         pdo_mysql \
         amqp \
+        pcntl \
         opcache \
         apcu \
-        zip \
+        sodium \
         xsl \
+        zip \
         intl
 
-FROM composer:2.4.1 as composer
+COPY ./app/ /var/www/project/
 
-FROM golang:1.18 as scc
-WORKDIR /scc
-COPY ./scc/ ./
-RUN go mod download
-RUN go build
-
-###### BUILDING SECTION ######
-FROM main as build-stage
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 ## get node and npm
 ENV NODE_VERSION=16.13.0
@@ -37,27 +39,19 @@ RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 ## get dependency files
-COPY ./app/composer.json ./app/composer.lock ./
-COPY ./app/package.json ./app/package-lock.json ./
 ## run dependency managers
 RUN composer install --no-interaction --no-scripts
 RUN npm install
-COPY ./app/webpack.config.js ./
-COPY ./app/assets/ assets/
-COPY ./app/public/ public/
-RUN encore
 
+RUN npm run build
 ###### PROD SECTION
-FROM main as prod
 RUN apt-get update
 RUN apt-get install -y supervisor git
 RUN printf '#!/bin/sh\nexit 0' > /usr/sbin/policy-rc.d
 RUN mkdir -p /var/log/supervisor
-COPY ./messenger-worker.conf /etc/supervisor/conf.d/messenger-worker.conf
-COPY --from=scc ./scc /usr/local/bin/scc
-COPY --from=build-stage /var/www/project/ /var/www/project/
-COPY ./app/ /var/www/project/
-COPY .env .env.local
+COPY messenger-worker.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --from=scc ./scc/scc /usr/local/bin/scc
+COPY ./app/.env /var/www/project/.env.local
 RUN bin/console assets:install
 RUN bin/console cache:clear -e prod
 CMD ["/usr/bin/supervisord"]
