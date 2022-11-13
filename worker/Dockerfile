@@ -8,9 +8,6 @@ RUN go build
 
 FROM nizzlestin/thesis-fpm:1.0 as main
 
-COPY ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub ~/.ssh/known_hosts ~/.ssh/
-RUN eval "$(ssh-agent -s)"
-RUN ssh-add ~/.ssh/id_ed25519
 COPY ./app/ /var/www/project/
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
