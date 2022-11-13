@@ -7,6 +7,7 @@ RUN go mod download
 RUN go build
 
 FROM nizzlestin/thesis-fpm:1.0 as main
+RUN  echo 'memory_limit = 1024M' >> /usr/local/etc/php/php.ini
 
 COPY ./app/ /var/www/project/
 
