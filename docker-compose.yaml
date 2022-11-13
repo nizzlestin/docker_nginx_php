@@ -51,17 +51,17 @@ services:
     networks:
       - symfony
 
-  rabbitmq: # The RabbitMQ container.
-    image: rabbitmq:3-management
-    ports:
-      - 15672:15672
-    volumes:
-      - rabbitmq:/var/lib/rabbitmq:cached
-    networks:
-      - symfony
+  # rabbitmq: # The RabbitMQ container.
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - 15672:15672
+  #   volumes:
+  #     - rabbitmq:/var/lib/rabbitmq:cached
+  #   networks:
+  #     - symfony
   
 volumes:
   db_volume:
-  rabbitmq:
+  # rabbitmq:
 networks:
   symfony:
