@@ -14,6 +14,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ###### PROD SECTION
+RUN apt-get update
 RUN apt-get install -y supervisor git
 RUN printf '#!/bin/sh\nexit 0' > /usr/sbin/policy-rc.d
 RUN mkdir -p /var/log/supervisor
