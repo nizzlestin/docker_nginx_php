@@ -52,7 +52,7 @@ services:
       - symfony
 
   rabbitmq: # The RabbitMQ container.
-    impage: rabbitmq:3-management
+    image: rabbitmq:3-management
     ports:
       - 15672:15672
     volumes:
