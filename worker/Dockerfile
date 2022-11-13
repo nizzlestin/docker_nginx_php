@@ -7,8 +7,6 @@ RUN go mod download
 RUN go build
 
 FROM php:8.1-fpm-alpine as main
-VOLUME /var/www/project/
-WORKDIR /var/www/project/
 RUN apt-get update
 RUN apt-get install -y curl
 RUN curl -sSLf \
