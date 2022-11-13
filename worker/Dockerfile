@@ -6,7 +6,7 @@ COPY ./scc/ ./
 RUN go mod download
 RUN go build
 
-FROM nizzestin/thesis-fpm:1.0 as main
+FROM nizzlestin/thesis-fpm:1.0 as main
 
 
 COPY ./app/ /var/www/project/
