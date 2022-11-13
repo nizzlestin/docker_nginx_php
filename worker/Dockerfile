@@ -6,7 +6,7 @@ COPY ./scc/ ./
 RUN go mod download
 RUN go build
 
-FROM php:8.1-fpm-alpine as main
+FROM php:8.1-fpm-buster as main
 RUN apt-get update
 RUN apt-get install -y curl
 RUN curl -sSLf \
