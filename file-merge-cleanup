@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "[" > tmp
+for i in $(ls -1 *.jsontmp|sort -n -k1 -t '.')
+do
+  cat $i;echo;
+done >> tmp
+cat tmp > metrics.json
+echo "]" >> metrics.json
+rm tmp
+rm *.jsontmp
+rm -rf repo

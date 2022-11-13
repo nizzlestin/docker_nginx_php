@@ -8,7 +8,8 @@ RUN go build
 
 FROM nizzlestin/thesis-fpm:1.0 as main
 RUN  echo 'memory_limit = 1024M' >> /usr/local/etc/php/php.ini
-
+COPY ./file-merge-cleanup /usr/local/bin/repocleanup
+RUN chmod +x /usr/local/bin/repocleanup
 COPY ./app/ /var/www/project/
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
