@@ -18,7 +18,7 @@ services:
       dockerfile: php/Dockerfile
     hostname: php
     volumes:
-      - ~/.ssh:~/.ssh
+      - ./.ssh:/root/.ssh
     networks:
       - symfony
 
@@ -49,7 +49,7 @@ services:
     depends_on:
       - php
     volumes:
-      - ~/.ssh:~/.ssh
+      - ./.ssh:/root/.ssh
     volumes_from:
       - php
     networks:
