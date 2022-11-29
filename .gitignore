@@ -1,0 +1,5 @@
+app/*
+scc/*
+app/public/*
+scc/
+.env.local

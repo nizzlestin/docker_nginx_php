@@ -9,8 +9,8 @@ services:
     ports:
       - 80:80
 #      - 443:443
-    networks:
-      - symfony
+#    networks:
+#      - symfony
 
   php:
     build:
@@ -19,11 +19,12 @@ services:
     hostname: php
     volumes:
       - ./.ssh:/root/.ssh
-    networks:
-      - symfony
+#    networks:
+#      - symfony
 
   # https://hub.docker.com/_/mariadb
   database:
+    restart: always
     image: mariadb:10.6.5
     hostname: database-server
     command: --default-authentication-plugin=mysql_native_password
@@ -39,8 +40,8 @@ services:
       retries: 15
     volumes:
       - db_volume:/var/lib/mysql
-    networks:
-      - symfony
+#    networks:
+#      - symfony
 
   worker:
     build:
@@ -52,8 +53,8 @@ services:
       - ./.ssh:/root/.ssh
     volumes_from:
       - php
-    networks:
-      - symfony
+#   networks:
+#     - symfony
 
   # rabbitmq: # The RabbitMQ container.
   #   image: rabbitmq:3-management
@@ -67,5 +68,5 @@ services:
 volumes:
   db_volume:
   # rabbitmq:
-networks:
-  symfony:
+#networks:
+#  symfony:
