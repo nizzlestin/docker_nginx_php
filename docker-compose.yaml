@@ -39,7 +39,7 @@ services:
       timeout: 1s
       retries: 15
     volumes:
-      - db_volume:/var/lib/mysql
+      - ./db_volume:/var/lib/mysql
 #    networks:
 #      - symfony
 
@@ -65,8 +65,8 @@ services:
   #   networks:
   #     - symfony
   
-volumes:
-  db_volume:
+#volumes:
+#  db_volume:
   # rabbitmq:
 #networks:
 #  symfony:
