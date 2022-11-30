@@ -1,0 +1,2 @@
+#!/bin/bash
+git log --first-parent -M -C --name-only --format="format:" "$@" | sort | grep -v "^$" | uniq -c | sort -n
