@@ -13,6 +13,8 @@ RUN chmod +x /usr/local/bin/repocleanup
 COPY ./git-churn /usr/local/bin/git-churn
 RUN chmod +x /usr/local/bin/git-churn
 COPY ./app/ /var/www/project/
+RUN chmod -R 777 /var/www/project/repo/
+RUN chmod -R 777 /var/www/project/metric/
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN echo
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
