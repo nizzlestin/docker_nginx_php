@@ -13,8 +13,8 @@ RUN chmod +x /usr/local/bin/repocleanup
 COPY ./git-churn /usr/local/bin/git-churn
 RUN chmod +x /usr/local/bin/git-churn
 COPY ./app/ /var/www/project/
-RUN chmod -R 777 /var/www/project/repo/
-RUN chmod -R 777 /var/www/project/metric/
+RUN chmod -R 777 /var/www/project/public/repo/
+RUN chmod -R 777 /var/www/project/public/metric/
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 ## get node and npm
 ENV NODE_VERSION=16.13.0
